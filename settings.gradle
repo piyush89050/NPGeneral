@@ -1,0 +1,3 @@
+include ':NPGeneral'
+include ':app'
+rootProject.name = "Ads Demo"
