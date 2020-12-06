@@ -9,30 +9,33 @@ package com.rjn.npgeneral.ads;
 
 import android.app.Activity;
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.ads.Ad;
+import com.facebook.ads.AdError;
+import com.facebook.ads.AdOptionsView;
+import com.facebook.ads.MediaView;
+import com.facebook.ads.NativeAd;
+import com.facebook.ads.NativeAdLayout;
+import com.facebook.ads.NativeAdListener;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.formats.MediaView;
-import com.google.android.gms.ads.formats.NativeAd;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.formats.UnifiedNativeAdView;
 import com.rjn.npgeneral.BuildConfig;
 import com.rjn.npgeneral.R;
-import com.unity3d.services.banners.BannerView;
-import com.unity3d.services.banners.UnityBannerSize;
 
-import static com.rjn.npgeneral.ads.NPGeneral.getAdWidth;
+import java.util.ArrayList;
+import java.util.List;
 
 public class NPNativeAds {
 
@@ -42,6 +45,9 @@ public class NPNativeAds {
     private final FrameLayout adContainerView;
 
     private UnifiedNativeAd nativeAd;
+
+    private NativeAd nativeAdFacebook;
+    private NativeAdListener nativeAdListenerFacebook;
 
     /**
      * Create a new {@link NPNativeAds}.
@@ -55,43 +61,35 @@ public class NPNativeAds {
         this.npAdsType = npAdsType;
         this.adContainerView = adContainerView;
 
-
-            loadBanner();
+        if (adUnit != null && !adUnit.isEmpty())
+            loadNativeAds();
     }
 
-    public void loadBanner() {
+    public void loadNativeAds() {
         switch (npAdsType) {
             case GOOGLE:
-                refreshAd();
+                googleNativeAd();
                 break;
             case FACEBOOK:
+                facebookNativeAd();
                 break;
             case UNITY:
                 break;
         }
     }
 
-
-    private void refreshAd() {
-
-        AdLoader.Builder builder = new AdLoader.Builder(context, "ca-app-pub-3940256099942544/2247696110");
-
-        builder.forUnifiedNativeAd(new UnifiedNativeAd.OnUnifiedNativeAdLoadedListener() {
-            // OnUnifiedNativeAdLoadedListener implementation.
-            @Override
-            public void onUnifiedNativeAdLoaded(UnifiedNativeAd unifiedNativeAd) {
-                // You must call destroy on old ads when you are done with them,
-                // otherwise you will have a memory leak.
-                if (nativeAd != null) {
-                    nativeAd.destroy();
-                }
-                nativeAd = unifiedNativeAd;
-                UnifiedNativeAdView adView = (UnifiedNativeAdView) ((Activity) context).getLayoutInflater().inflate(R.layout.google_native_ad_unit, null);
-                populateUnifiedNativeAdView(unifiedNativeAd, adView);
-                adContainerView.removeAllViews();
-                adContainerView.addView(adView);
+    private void googleNativeAd() {
+        AdLoader.Builder builder = new AdLoader.Builder(context, BuildConfig.DEBUG ? "ca-app-pub-3940256099942544/2247696110" : adUnit);
+        // OnUnifiedNativeAdLoadedListener implementation.
+        builder.forUnifiedNativeAd(unifiedNativeAd -> {
+            if (nativeAd != null) {
+                nativeAd.destroy();
             }
-
+            nativeAd = unifiedNativeAd;
+            UnifiedNativeAdView adView = (UnifiedNativeAdView) ((Activity) context).getLayoutInflater().inflate(R.layout.google_native_ad_unit, null);
+            populateUnifiedNativeAdView(unifiedNativeAd, adView);
+            adContainerView.removeAllViews();
+            adContainerView.addView(adView);
         });
 
 //        VideoOptions videoOptions = new VideoOptions.Builder()
@@ -113,15 +111,12 @@ public class NPNativeAds {
         }).build();
 
         adLoader.loadAd(new AdRequest.Builder().build());
-
-//        videoStatus.setText("");
     }
 
-    private void populateUnifiedNativeAdView(UnifiedNativeAd nativeAd, UnifiedNativeAdView adView) {
-        // Set the media view.
-        adView.setMediaView((MediaView) adView.findViewById(R.id.ad_media));
+    private void populateUnifiedNativeAdView(UnifiedNativeAd nativeAd, UnifiedNativeAdView
+            adView) {
+        adView.setMediaView(adView.findViewById(R.id.ad_media));
 
-        // Set other ad assets.
         adView.setHeadlineView(adView.findViewById(R.id.ad_headline));
         adView.setBodyView(adView.findViewById(R.id.ad_body));
         adView.setCallToActionView(adView.findViewById(R.id.ad_call_to_action));
@@ -187,11 +182,96 @@ public class NPNativeAds {
             ((TextView) adView.getAdvertiserView()).setText(nativeAd.getAdvertiser());
             adView.getAdvertiserView().setVisibility(View.VISIBLE);
         }
-
-        // This method tells the Google Mobile Ads SDK that you have finished populating your
-        // native ad view with this native ad.
         adView.setNativeAd(nativeAd);
 
+    }
+
+    private void facebookNativeAd() {
+        nativeAdFacebook = new NativeAd(context, adUnit);
+
+        nativeAdListenerFacebook = new NativeAdListener() {
+            @Override
+            public void onMediaDownloaded(Ad ad) {
+                // Native ad finished downloading all assets
+            }
+
+            @Override
+            public void onError(Ad ad, AdError adError) {
+                // Native ad failed to load
+                if (nativeAdFacebook != null) {
+                    nativeAdFacebook.loadAd(nativeAdFacebook.buildLoadAdConfig().withAdListener(nativeAdListenerFacebook).build());
+                }
+            }
+
+            @Override
+            public void onAdLoaded(Ad ad) {
+                // Native ad is loaded and ready to be displayed
+                // Race condition, load() called again before last ad was displayed
+                if (nativeAdFacebook == null || nativeAdFacebook != ad) {
+                    return;
+                }
+                // Inflate Native Ad into Container
+                facebookInflateAd(nativeAdFacebook);
+            }
+
+            @Override
+            public void onAdClicked(Ad ad) {
+                // Native ad clicked
+            }
+
+            @Override
+            public void onLoggingImpression(Ad ad) {
+                // Native ad impression
+            }
+        };
+
+        // Request an ad
+        if (nativeAdFacebook != null)
+            nativeAdFacebook.loadAd(nativeAdFacebook.buildLoadAdConfig().withAdListener(nativeAdListenerFacebook).build());
+    }
+
+    private void facebookInflateAd(NativeAd nativeAd) {
+
+        nativeAd.unregisterView();
+        View viewAdMain = LayoutInflater.from(context).inflate(R.layout.fb_native_ad_unit, null);
+        NativeAdLayout nativeAdLayout = viewAdMain.findViewById(R.id.native_ad_container);
+
+        LinearLayout adViewN = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.fb_native_ad_contain, nativeAdLayout, false);
+        nativeAdLayout.addView(adViewN);
+
+        // Add the AdOptionsView
+        LinearLayout adChoicesContainer = adViewN.findViewById(R.id.ad_choices_container);
+        AdOptionsView adOptionsView = new AdOptionsView(context, nativeAd, nativeAdLayout);
+        adChoicesContainer.removeAllViews();
+        adChoicesContainer.addView(adOptionsView, 0);
+
+        // Create native UI using the ad metadata.
+        MediaView nativeAdIcon = adViewN.findViewById(R.id.native_ad_icon);
+        TextView nativeAdTitle = adViewN.findViewById(R.id.native_ad_title);
+        MediaView nativeAdMedia = adViewN.findViewById(R.id.native_ad_media);
+        TextView nativeAdSocialContext = adViewN.findViewById(R.id.native_ad_social_context);
+        TextView nativeAdBody = adViewN.findViewById(R.id.native_ad_body);
+        TextView sponsoredLabel = adViewN.findViewById(R.id.native_ad_sponsored_label);
+        Button nativeAdCallToAction = adViewN.findViewById(R.id.native_ad_call_to_action);
+
+        // Set the Text.
+        nativeAdTitle.setText(nativeAd.getAdvertiserName());
+        nativeAdBody.setText(nativeAd.getAdBodyText());
+        nativeAdSocialContext.setText(nativeAd.getAdSocialContext());
+        nativeAdCallToAction.setVisibility(nativeAd.hasCallToAction() ? View.VISIBLE : View.INVISIBLE);
+        nativeAdCallToAction.setText(nativeAd.getAdCallToAction());
+        sponsoredLabel.setText(nativeAd.getSponsoredTranslation());
+
+        // Create a list of clickable views
+        List<View> clickableViews = new ArrayList<>();
+        clickableViews.add(nativeAdTitle);
+        clickableViews.add(nativeAdCallToAction);
+
+        // Register the Title and CTA button to listen for clicks.
+        nativeAd.registerViewForInteraction(
+                adViewN, nativeAdMedia, nativeAdIcon, clickableViews);
+
+        adContainerView.addView(viewAdMain);
     }
 
 

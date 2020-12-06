@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
     var npInterstitialAds: NPInterstitialAds? = null
     var npBannerAds: NPBannerAds? = null
     var npNativeAds: NPNativeAds? = null
-
+    var npNativeBannerAds: NPNativeBannerAds? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +29,9 @@ class MainActivity : AppCompatActivity() {
 
         NPApplication(this)
 
-        npNativeAds = NPNativeAds(this, "298525301324695_298527264657832", NPAdsType.GOOGLE, adView_Container_Native)
+        //npNativeAds = NPNativeAds(this, "298525301324695_298527264657832", NPAdsType.GOOGLE, adView_Container_Native)
+        npNativeAds = NPNativeAds(this, "298525301324695_298525967991295", NPAdsType.GOOGLE, adView_Container_Native);
+        //npNativeBannerAds = NPNativeBannerAds(this, "298525301324695_298525967991295", NPAdsType.FACEBOOK, adView_Container_Native)
 
         npBannerAds = NPBannerAds(this, "298525301324695_298527264657832", NPAdsType.FACEBOOK, adView_Container)
 
