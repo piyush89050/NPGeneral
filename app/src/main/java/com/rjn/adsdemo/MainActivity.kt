@@ -28,13 +28,13 @@ class MainActivity : AppCompatActivity() {
        // NPToken(this).execute()
 
         NPApplication(this)
-        //npNativeAds = NPNativeAds(this, "298525301324695_298527264657832", NPAdsType.GOOGLE, adView_Container_Native)
-        npNativeAds = NPNativeAds(this, "298525301324695_298525967991295", NPAdsType.GOOGLE, adView_Container_Native);
-        //npNativeBannerAds = NPNativeBannerAds(this, "298525301324695_298525967991295", NPAdsType.FACEBOOK, adView_Container_Native)
+        //npNativeAds = NPNativeAds(this, "", NPAdsType.GOOGLE, adView_Container_Native)
+        npNativeAds = NPNativeAds(this, "", NPAdsType.GOOGLE, adView_Container_Native);
+        //npNativeBannerAds = NPNativeBannerAds(this, "", NPAdsType.FACEBOOK, adView_Container_Native)
 
-        npBannerAds = NPBannerAds(this, "298525301324695_298527264657832", NPAdsType.FACEBOOK, adView_Container)
+        npBannerAds = NPBannerAds(this, "", NPAdsType.FACEBOOK, adView_Container)
 
-        npInterstitialAds = NPInterstitialAds(this, "298525301324695_298527867991105", NPAdsType.FACEBOOK)
+        npInterstitialAds = NPInterstitialAds(this, "", NPAdsType.FACEBOOK)
         npInterstitialAds?.setAdListener(object : NPAdListener() {
             override fun onAdClosed() {
                 super.onAdClosed()
