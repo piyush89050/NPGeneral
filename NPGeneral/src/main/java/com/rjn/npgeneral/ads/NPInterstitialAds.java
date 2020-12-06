@@ -46,7 +46,7 @@ public class NPInterstitialAds {
             switch (npAdsType) {
                 case GOOGLE:
                     interstitialAdGoogle = new InterstitialAd(context);
-                    interstitialAdGoogle.setAdUnitId(BuildConfig.DEBUG ? "ca-app-pub-3940256099942544/1033173712" : adUnit);
+                    interstitialAdGoogle.setAdUnitId(NPApplication.isTestAds ? "ca-app-pub-3940256099942544/1033173712" : adUnit);
                     break;
                 case FACEBOOK:
                     interstitialAdFacebook = new com.facebook.ads.InterstitialAd(context, adUnit);

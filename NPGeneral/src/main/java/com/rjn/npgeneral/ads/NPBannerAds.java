@@ -50,7 +50,7 @@ public class NPBannerAds {
                 case GOOGLE:
                     adViewGoogle = new AdView(context);
                     adContainerView.addView(adViewGoogle);
-                    adViewGoogle.setAdUnitId(BuildConfig.DEBUG ? "ca-app-pub-3940256099942544/6300978111" : adUnit);
+                    adViewGoogle.setAdUnitId(NPApplication.isTestAds ? "ca-app-pub-3940256099942544/6300978111" : adUnit);
                     AdSize adSize = NPGeneral.getAdSize(context);
                     // Set the adaptive ad size to the ad view.
                     adViewGoogle.setAdSize(adSize);

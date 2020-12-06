@@ -2,16 +2,9 @@ package com.rjn.npgeneral.ads;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.os.AsyncTask;
 import android.util.DisplayMetrics;
-import android.util.Log;
 
 import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.identifier.AdvertisingIdClient;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
-
-import java.io.IOException;
 
 public class NPGeneral {
 
@@ -39,6 +32,13 @@ public class NPGeneral {
         return adWidth;
     }
 
+    public enum NativeLayoutType {
+        MediaView, BodyView, HeadlineView, CallToActionView, IconView, PriceView, StarRatingView, StoreView, AdvertiserView, NativeAdsType,
+        AdChoicesContainer, AdSocialContext, SponsoredLabel
+    }
 
+    public enum NativeAdsType {
+        NativeBannerAd, NativeAd
+    }
 
 }

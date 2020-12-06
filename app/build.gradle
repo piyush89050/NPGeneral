@@ -51,4 +51,7 @@ dependencies {
 
     implementation project(':NPGeneral')
     implementation 'com.android.support:multidex:1.0.3'
+
+    implementation 'com.google.android.gms:play-services-ads:19.6.0'
+    implementation 'com.facebook.android:audience-network-sdk:6.2.0'
 }
