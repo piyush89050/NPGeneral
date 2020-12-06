@@ -28,7 +28,6 @@ class MainActivity : AppCompatActivity() {
        // NPToken(this).execute()
 
         NPApplication(this)
-
         //npNativeAds = NPNativeAds(this, "298525301324695_298527264657832", NPAdsType.GOOGLE, adView_Container_Native)
         npNativeAds = NPNativeAds(this, "298525301324695_298525967991295", NPAdsType.GOOGLE, adView_Container_Native);
         //npNativeBannerAds = NPNativeBannerAds(this, "298525301324695_298525967991295", NPAdsType.FACEBOOK, adView_Container_Native)
