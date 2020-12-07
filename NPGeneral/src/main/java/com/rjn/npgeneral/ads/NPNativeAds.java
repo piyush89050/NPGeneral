@@ -44,11 +44,13 @@ public class NPNativeAds {
     private final FrameLayout adContainerView;
 
     private UnifiedNativeAd nativeAdGoogle;
+    private UnifiedNativeAdView unifiedNativeAdViewGoogle;
     private Map<NPGeneral.NativeLayoutType, Object> mapLayoutObj;
 
     private NativeAd nativeAdFacebook;
     private NativeBannerAd nativeBannerAdFacebook;
     private View adViewContainNative;
+    NativeAdLayout nativeAdLayout;
     private NativeAdListener nativeAdListenerFacebook;
 
     /**
@@ -94,8 +96,11 @@ public class NPNativeAds {
                 nativeAdGoogle.destroy();
             }
             nativeAdGoogle = unifiedNativeAd;
-            UnifiedNativeAdView unifiedNativeAdViewGoogle = new UnifiedNativeAdView(context);
-            unifiedNativeAdViewGoogle.addView(adViewContainNative);
+            if (unifiedNativeAdViewGoogle == null) {
+                unifiedNativeAdViewGoogle = new UnifiedNativeAdView(context);
+                //unifiedNativeAdViewGoogle.removeAllViews();
+                unifiedNativeAdViewGoogle.addView(adViewContainNative);
+            }
             populateUnifiedNativeAdView(unifiedNativeAd, unifiedNativeAdViewGoogle);
             adContainerView.removeAllViews();
             adContainerView.addView(unifiedNativeAdViewGoogle);
@@ -301,8 +306,11 @@ public class NPNativeAds {
             nativeBannerAd.unregisterView();
 
         View viewAdMain = LayoutInflater.from(context).inflate(R.layout.fb_native_ad_unit, null);
-        NativeAdLayout nativeAdLayout = viewAdMain.findViewById(R.id.native_ad_container);
-        nativeAdLayout.addView(adViewContainNative);
+        if (nativeAdLayout==null){
+            nativeAdLayout = viewAdMain.findViewById(R.id.native_ad_container);
+            nativeAdLayout.addView(adViewContainNative);
+        }
+
 
         // Add the AdOptionsView
         if (mapLayoutObj.containsKey(NPGeneral.NativeLayoutType.AdChoicesContainer)) {
