@@ -44,12 +44,11 @@ public class NPNativeAds {
     private final FrameLayout adContainerView;
 
     private UnifiedNativeAd nativeAdGoogle;
-    private UnifiedNativeAdView unifiedNativeAdViewGoogle;
     private Map<NPGeneral.NativeLayoutType, Object> mapLayoutObj;
 
     private NativeAd nativeAdFacebook;
     private NativeBannerAd nativeBannerAdFacebook;
-    private LinearLayout adViewContainFacebook;
+    private View adViewContainNative;
     private NativeAdListener nativeAdListenerFacebook;
 
     /**
@@ -58,30 +57,12 @@ public class NPNativeAds {
      * @param context An Android {@link Context}.
      */
 
-    public NPNativeAds(Context context, String adUnit, NPAdsType npAdsType, FrameLayout adContainerView, UnifiedNativeAdView unifiedNativeAdViewGoogle, Map<NPGeneral.NativeLayoutType, Object> mapLayoutObj) {
+    public NPNativeAds(Context context, String adUnit, NPAdsType npAdsType, FrameLayout adContainerView, View adViewContainNative, Map<NPGeneral.NativeLayoutType, Object> mapLayoutObj) {
         this.context = context;
         this.adUnit = adUnit;
         this.npAdsType = npAdsType;
         this.adContainerView = adContainerView;
-        this.unifiedNativeAdViewGoogle = unifiedNativeAdViewGoogle;
-        this.mapLayoutObj = mapLayoutObj;
-
-        if (adUnit != null && !adUnit.isEmpty())
-            loadNativeAds();
-    }
-
-    /**
-     * Create a new {@link NPNativeAds}.
-     *
-     * @param context An Android {@link Context}.
-     */
-
-    public NPNativeAds(Context context, String adUnit, NPAdsType npAdsType, FrameLayout adContainerView, LinearLayout adViewContainFacebook, Map<NPGeneral.NativeLayoutType, Object> mapLayoutObj) {
-        this.context = context;
-        this.adUnit = adUnit;
-        this.npAdsType = npAdsType;
-        this.adContainerView = adContainerView;
-        this.adViewContainFacebook = adViewContainFacebook;
+        this.adViewContainNative = adViewContainNative;
         this.mapLayoutObj = mapLayoutObj;
 
         if (adUnit != null && !adUnit.isEmpty())
@@ -91,11 +72,11 @@ public class NPNativeAds {
     public void loadNativeAds() {
         switch (npAdsType) {
             case GOOGLE:
-                if (unifiedNativeAdViewGoogle != null && mapLayoutObj != null && mapLayoutObj.size() > 0)
+                if (adViewContainNative != null && mapLayoutObj != null && mapLayoutObj.size() > 0)
                     googleNativeAd();
                 break;
             case FACEBOOK:
-                if (adViewContainFacebook != null && mapLayoutObj != null && mapLayoutObj.size() > 0)
+                if (adViewContainNative != null && mapLayoutObj != null && mapLayoutObj.size() > 0)
                     facebookNativeAd();
                 break;
             case UNITY:
@@ -113,10 +94,11 @@ public class NPNativeAds {
                 nativeAdGoogle.destroy();
             }
             nativeAdGoogle = unifiedNativeAd;
+            UnifiedNativeAdView unifiedNativeAdViewGoogle = new UnifiedNativeAdView(context);
+            unifiedNativeAdViewGoogle.addView(adViewContainNative);
             populateUnifiedNativeAdView(unifiedNativeAd, unifiedNativeAdViewGoogle);
             adContainerView.removeAllViews();
             adContainerView.addView(unifiedNativeAdViewGoogle);
-
         });
 
 //        VideoOptions videoOptions = new VideoOptions.Builder()
@@ -320,7 +302,7 @@ public class NPNativeAds {
 
         View viewAdMain = LayoutInflater.from(context).inflate(R.layout.fb_native_ad_unit, null);
         NativeAdLayout nativeAdLayout = viewAdMain.findViewById(R.id.native_ad_container);
-        nativeAdLayout.addView(adViewContainFacebook);
+        nativeAdLayout.addView(adViewContainNative);
 
         // Add the AdOptionsView
         if (mapLayoutObj.containsKey(NPGeneral.NativeLayoutType.AdChoicesContainer)) {
@@ -381,10 +363,10 @@ public class NPNativeAds {
         // Register the Title and CTA button to listen for clicks.
         if (nativeAd != null) {
             if (nativeAdMedia != null && nativeAdIcon != null && clickableViews.size() > 0)
-                nativeAd.registerViewForInteraction(adViewContainFacebook, nativeAdMedia, nativeAdIcon, clickableViews);
+                nativeAd.registerViewForInteraction(adViewContainNative, nativeAdMedia, nativeAdIcon, clickableViews);
         } else if (nativeBannerAd != null)
             if (nativeAdIcon != null && clickableViews.size() > 0)
-                nativeBannerAd.registerViewForInteraction(adViewContainFacebook, nativeAdIcon, clickableViews);
+                nativeBannerAd.registerViewForInteraction(adViewContainNative, nativeAdIcon, clickableViews);
 
         adContainerView.addView(viewAdMain);
     }
