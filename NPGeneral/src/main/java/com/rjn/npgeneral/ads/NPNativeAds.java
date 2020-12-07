@@ -114,7 +114,7 @@ public class NPNativeAds {
         adLoader = builder.withAdListener(new AdListener() {
             @Override
             public void onAdFailedToLoad(int errorCode) {
-                adLoader.loadAd(new AdRequest.Builder().build());
+                //adLoader.loadAd(new AdRequest.Builder().build());
             }
         }).build();
         adLoader.loadAd(new AdRequest.Builder().build());
@@ -218,9 +218,9 @@ public class NPNativeAds {
                 @Override
                 public void onError(Ad ad, AdError adError) {
                     // Native ad failed to load
-                    if (nativeAdFacebook != null) {
+                   /* if (nativeAdFacebook != null) {
                         nativeAdFacebook.loadAd(nativeAdFacebook.buildLoadAdConfig().withAdListener(nativeAdListenerFacebook).build());
-                    }
+                    }*/
                 }
 
                 @Override
@@ -260,8 +260,8 @@ public class NPNativeAds {
                 @Override
                 public void onError(Ad ad, AdError adError) {
                     if (nativeBannerAdFacebook != null) {
-                        nativeBannerAdFacebook.destroy();
-                        nativeBannerAdFacebook.loadAd(nativeBannerAdFacebook.buildLoadAdConfig().withAdListener(nativeAdListenerFacebook).build());
+                        //nativeBannerAdFacebook.destroy();
+                        //nativeBannerAdFacebook.loadAd(nativeBannerAdFacebook.buildLoadAdConfig().withAdListener(nativeAdListenerFacebook).build());
                     }
                 }
 
