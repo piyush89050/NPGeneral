@@ -23,7 +23,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        NPApplication(this, BuildConfig.DEBUG);
+        NPApplication(this, BuildConfig.DEBUG)
+
         /*val adView: LinearLayout =
             layoutInflater.inflate(R.layout.google_native_ad_unit, null) as LinearLayout
 
@@ -50,6 +51,7 @@ class MainActivity : AppCompatActivity() {
         /* mapAdsLayout[NPGeneral.NativeLayoutType.NativeAdsType] =
              NPGeneral.NativeAdsType.NativeAd*/
 
+        mapAdsLayout[NPGeneral.NativeLayoutType.AdHeight] = 50;
         mapAdsLayout[NPGeneral.NativeLayoutType.AdChoicesContainer] =
             adView.findViewById(R.id.ad_choices_container)
         mapAdsLayout[NPGeneral.NativeLayoutType.MediaView] =
@@ -68,7 +70,14 @@ class MainActivity : AppCompatActivity() {
             adView.findViewById(R.id.native_ad_call_to_action)
 
         npNativeAds =
-            NPNativeAds(this, "298525301324695_298525967991295", NPAdsType.FACEBOOK, adView_Container_Native, adView, mapAdsLayout)
+            NPNativeAds(
+                this,
+                "298525301324695_298525967991295",
+                NPAdsType.FACEBOOK,
+                adView_Container_Native,
+                adView,
+                mapAdsLayout
+            )
 
         btnReloadBanner.setOnClickListener {
             npNativeAds!!.loadNativeAds()

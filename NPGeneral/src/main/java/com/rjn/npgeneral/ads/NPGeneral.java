@@ -34,7 +34,7 @@ public class NPGeneral {
 
     public enum NativeLayoutType {
         MediaView, BodyView, HeadlineView, CallToActionView, IconView, PriceView, StarRatingView, StoreView, AdvertiserView, NativeAdsType,
-        AdChoicesContainer, AdSocialContext, SponsoredLabel
+        AdChoicesContainer, AdSocialContext, SponsoredLabel, AdHeight
     }
 
     public enum NativeAdsType {

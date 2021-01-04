@@ -119,7 +119,6 @@ public class NPNativeAds {
         adLoader = builder.withAdListener(new AdListener() {
             @Override
             public void onAdFailedToLoad(int errorCode) {
-                //adLoader.loadAd(new AdRequest.Builder().build());
             }
         }).build();
         adLoader.loadAd(new AdRequest.Builder().build());
@@ -200,7 +199,7 @@ public class NPNativeAds {
         if (mapLayoutObj.containsKey(NPGeneral.NativeLayoutType.AdvertiserView)) {
             adView.setAdvertiserView((View) mapLayoutObj.get(NPGeneral.NativeLayoutType.AdvertiserView));
             if (nativeAd.getAdvertiser() == null) {
-                adView.getAdvertiserView().setVisibility(View.INVISIBLE);
+                adView.getAdvertiserView().setVisibility(View.GONE);
             } else {
                 ((TextView) adView.getAdvertiserView()).setText(nativeAd.getAdvertiser());
                 adView.getAdvertiserView().setVisibility(View.VISIBLE);
@@ -306,12 +305,17 @@ public class NPNativeAds {
             nativeBannerAd.unregisterView();
 
         View viewAdMain = LayoutInflater.from(context).inflate(R.layout.fb_native_ad_unit, null);
-        if (nativeAdLayout==null){
+
+        if (mapLayoutObj.containsKey(NPGeneral.NativeLayoutType.AdHeight)) {
+            LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) viewAdMain.getLayoutParams();
+            layoutParams.height = (int) mapLayoutObj.get(NPGeneral.NativeLayoutType.AdHeight);
+            viewAdMain.setLayoutParams(layoutParams);
+        }
+
+        if (nativeAdLayout == null) {
             nativeAdLayout = viewAdMain.findViewById(R.id.native_ad_container);
             nativeAdLayout.addView(adViewContainNative);
         }
-
-
         // Add the AdOptionsView
         if (mapLayoutObj.containsKey(NPGeneral.NativeLayoutType.AdChoicesContainer)) {
             LinearLayout adChoicesContainer = (LinearLayout) mapLayoutObj.get(NPGeneral.NativeLayoutType.AdChoicesContainer);
@@ -372,10 +376,10 @@ public class NPNativeAds {
         if (nativeAd != null) {
             if (nativeAdMedia != null && nativeAdIcon != null && clickableViews.size() > 0)
                 nativeAd.registerViewForInteraction(adViewContainNative, nativeAdMedia, nativeAdIcon, clickableViews);
-        } else if (nativeBannerAd != null)
+        } else if (nativeBannerAd != null) {
             if (nativeAdIcon != null && clickableViews.size() > 0)
                 nativeBannerAd.registerViewForInteraction(adViewContainNative, nativeAdIcon, clickableViews);
-
+        }
         adContainerView.addView(viewAdMain);
     }
 

@@ -75,7 +75,6 @@ public class NPInterstitialAds {
                     @Override
                     public void onAdFailedToLoad(LoadAdError loadAdError) {
                         super.onAdFailedToLoad(loadAdError);
-                        loadAd();
                     }
 
                     @Override

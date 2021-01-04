@@ -59,7 +59,6 @@ public class NPBannerAds {
                         @Override
                         public void onAdFailedToLoad(LoadAdError loadAdError) {
                             super.onAdFailedToLoad(loadAdError);
-                            loadBanner();
                         }
                     });
                     break;
