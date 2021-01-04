@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity() {
         npNativeAds =
             NPNativeAds(
                 this,
-                "298525301324695_298525967991295",
+                "",
                 NPAdsType.FACEBOOK,
                 adView_Container_Native,
                 adView,
