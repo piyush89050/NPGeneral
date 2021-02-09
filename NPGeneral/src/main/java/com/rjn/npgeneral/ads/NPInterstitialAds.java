@@ -175,8 +175,12 @@ public class NPInterstitialAds {
                     case GOOGLE:
                         if (interstitialAdGoogle != null && interstitialAdGoogle.isLoaded())
                             interstitialAdGoogle.show();
-                        else
+                        else {
                             loadAd();
+                            if (listener != null)
+                                listener.onAdClosed();
+
+                        }
                         break;
                     case FACEBOOK:
                         if (interstitialAdFacebook != null && interstitialAdFacebook.isAdLoaded())
