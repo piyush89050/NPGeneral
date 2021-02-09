@@ -17,13 +17,13 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.LoadAdError;
-import com.rjn.npgeneral.BuildConfig;
 import com.unity3d.ads.UnityAds;
 
 public class NPInterstitialAds {
 
     private final Context context;
     private String adUnit;
+    private boolean isFailed = false;
     private NPAdListener listener;
     private NPAdsType npAdsType;
 
@@ -75,6 +75,7 @@ public class NPInterstitialAds {
                     @Override
                     public void onAdFailedToLoad(LoadAdError loadAdError) {
                         super.onAdFailedToLoad(loadAdError);
+                        isFailed = true;
                     }
 
                     @Override
@@ -108,7 +109,7 @@ public class NPInterstitialAds {
 
                     @Override
                     public void onError(Ad ad, AdError adError) {
-
+                        isFailed = true;
                     }
 
                     @Override
@@ -149,6 +150,7 @@ public class NPInterstitialAds {
      */
     public void loadAd() {
         if (adUnit != null && !adUnit.isEmpty()) {
+            isFailed = false;
             switch (npAdsType) {
                 case GOOGLE:
                     interstitialAdGoogle.loadAd(new AdRequest.Builder().build());
@@ -164,31 +166,35 @@ public class NPInterstitialAds {
      * Load the interstitial.
      */
     public void show() {
-        if (adUnit != null && !adUnit.isEmpty()) {
-            switch (npAdsType) {
-                case GOOGLE:
-                    if (interstitialAdGoogle != null && interstitialAdGoogle.isLoaded())
-                        interstitialAdGoogle.show();
-                    else
-                        loadAd();
-                    break;
-                case FACEBOOK:
-                    if (interstitialAdFacebook != null && interstitialAdFacebook.isAdLoaded())
-                        interstitialAdFacebook.show();
-                    else
-                        loadAd();
-                    break;
-                case UNITY:
-                    if (UnityAds.isReady(adUnit)) {
-                        UnityAds.show((Activity) context, adUnit);
-                    }
-                    break;
-            }
-        } else {
+        if (isFailed) {
             if (listener != null)
                 listener.onAdClosed();
+        } else {
+            if (adUnit != null && !adUnit.isEmpty()) {
+                switch (npAdsType) {
+                    case GOOGLE:
+                        if (interstitialAdGoogle != null && interstitialAdGoogle.isLoaded())
+                            interstitialAdGoogle.show();
+                        else
+                            loadAd();
+                        break;
+                    case FACEBOOK:
+                        if (interstitialAdFacebook != null && interstitialAdFacebook.isAdLoaded())
+                            interstitialAdFacebook.show();
+                        else
+                            loadAd();
+                        break;
+                    case UNITY:
+                        if (UnityAds.isReady(adUnit)) {
+                            UnityAds.show((Activity) context, adUnit);
+                        }
+                        break;
+                }
+            } else {
+                if (listener != null)
+                    listener.onAdClosed();
 
+            }
         }
-
     }
 }
